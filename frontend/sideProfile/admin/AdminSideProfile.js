@@ -1,14 +1,14 @@
 import React from "react";
 import { ScrollView, View, Text, TouchableOpacity } from "react-native";
-import { styles } from "../components/styles";
-import SideProfileOption from "../components/SideProfileOption";
+import { styles } from "../../components/styles";
+import SideProfileOption from "../../components/SideProfileOption";
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
-import PrimaryButton from "../components/PrimaryButton";
-import GradientText from "../components/GradientText";
-import {COLORS} from '../constants/Theme';
+import PrimaryButton from "../../components/PrimaryButton";
+import GradientText from "../../components/GradientText";
+import {COLORS} from '../../constants/Theme';
 import { LinearGradient } from "expo-linear-gradient";
 
-const SideProfile = ({ navigation }) => {
+const AdminSideProfile = ({ navigation }) => {
   return (
     <ScrollView
       style={styles.sideProfileContainer}
@@ -88,4 +88,4 @@ const SideProfile = ({ navigation }) => {
   );
 };
 
-export default SideProfile;
+export default AdminSideProfile;
