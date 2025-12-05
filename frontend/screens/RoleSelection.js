@@ -21,7 +21,7 @@ const RoleSelection = ({ navigation }) => {
         <PrimaryButton
           text="Customer"
           size="medium"
-          onPress={() => navigation.navigate("CustomerHome")}
+          onPress={() => navigation.navigate("CustomerTabs")}
         />
         <PrimaryButton
           text="Admin"

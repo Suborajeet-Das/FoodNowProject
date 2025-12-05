@@ -3,6 +3,8 @@ import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 
 import AdminDrawerNav from "./admin/AdminDrawerNav";
+import CustomerBottomNav from "./customer/CustomerBottomNav";
+
 import SplashScreen from "../auth/SplashScreen";
 import RoleSelection from "../screens/RoleSelection";
 
@@ -30,6 +32,7 @@ const RootNavigation = () => {
           <>
             <Stack.Screen name="SplashScreen" component={SplashScreen} />
             <Stack.Screen name="RoleSelection" component={RoleSelection} />
+            <Stack.Screen name="CustomerTabs" component={CustomerBottomNav} />
             <Stack.Screen name="AdminHome" component={AdminHome} />
             <Stack.Screen name="CustomerHome" component={CustomerHome} />
             <Stack.Screen name="StaffHome" component={StaffHome} />

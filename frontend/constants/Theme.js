@@ -1,6 +1,6 @@
 export const COLORS = {
-  primary: '#81122F',
-  secondary: "#2F1018",
+  primary: '#2F1018',
+  secondary: "#81122F",
 
   blur: '#e7e5e5ff',
   blurDark: '#111111',
