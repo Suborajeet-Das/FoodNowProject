@@ -5,8 +5,8 @@ import { SafeAreaView } from "react-native-safe-area-context";
 const StaffHome = () => {
   return (
     <SafeAreaView style={styles.container}>
-      <Text style={styles.title}>Staff Home</Text>
-      <Text style={styles.subtitle}>Welcome, Staff Member!</Text>
+      <Text style={styles.title}>Customer Home</Text>
+      <Text style={styles.subtitle}>Welcome, Dear Customer!</Text>
     </SafeAreaView>
   );
 };
