@@ -2,16 +2,17 @@ import React from "react";
 import { View, Text, StyleSheet } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-const StaffHome = () => {
+
+const KioskHome = () => {
   return (
     <SafeAreaView style={styles.container}>
-      <Text style={styles.title}>Staff Home</Text>
-      <Text style={styles.subtitle}>Welcome, Staff Member!</Text>
+      <Text style={styles.title}>Kiosk Mode</Text>
+      <Text style={styles.subtitle}>Kiosk ready for use!</Text>
     </SafeAreaView>
   );
 };
 
-export default StaffHome;
+export default KioskHome;
 
 const styles = StyleSheet.create({
   container: {
