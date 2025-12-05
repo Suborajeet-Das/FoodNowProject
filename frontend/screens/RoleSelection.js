@@ -34,10 +34,11 @@ const RoleSelection = ({ navigation }) => {
           onPress={() => navigation.navigate("StaffHome")}
         />
         <PrimaryButton
-          text="Kiosk"
-          size="medium"
-          onPress={() => navigation.navigate("KioskHome")}
+        text="Kiosk"
+        size="medium"
+        onPress={() => navigation.navigate("KioskHome")}
         />
+
       </View>
 
       {/* Continue Button */}

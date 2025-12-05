@@ -33,7 +33,8 @@ const RootNavigation = () => {
             <Stack.Screen name="AdminHome" component={AdminHome} />
             <Stack.Screen name="CustomerHome" component={CustomerHome} />
             <Stack.Screen name="StaffHome" component={StaffHome} />
-            <Stack.Screen name="KioskHome" component={KioskHome} />
+            <Stack.Screen name="KioskHome" component={KioskHome} options={{ headerShown: false }} // kiosk look, no header 
+            />
           </>
         ) : (
           <Stack.Screen name="Main" component={AdminDrawerNav} />
