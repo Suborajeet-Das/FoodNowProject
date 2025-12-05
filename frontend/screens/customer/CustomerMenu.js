@@ -1,24 +1,92 @@
-import React from "react";
-import { View, Text, StyleSheet } from "react-native";
+import React, { useState } from "react";
+import { View, Text, StyleSheet, ScrollView, FlatList } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-const StaffHome = () => {
+import Header from "../../components/Header";
+import SearchBar from "../../components/SearchBar";
+import FilterChips from "../../components/FilterChips";
+import BestSellerCard from "../../components/BestSellerCard";
+
+import vegthali from '../../assets/veg_thali.png';
+import chai from '../../assets/chai.png';
+
+const MENU_ITEMS = [
+  { id: "1", title: "Thali", price: "60", image: vegthali, category: "Thali" },
+  { id: "2", title: "Chai", price: "12", image: chai, category: "Roll" },
+  { id: "3", title: "Veg Thali", price: "60", image: vegthali, category: "Thali" },
+  { id: "4", title: "Chai", price: "12", image: chai, category: "Cake" },
+];
+
+const CustomerMenu = () => {
+  const [search, setSearch] = useState("");
+  const [filter, setFilter] = useState("All");
+
+  const filteredItems = MENU_ITEMS.filter(item =>
+    (filter === "All" || item.category === filter) &&
+    item.title.toLowerCase().includes(search.toLowerCase())
+  );
+
   return (
-    <SafeAreaView style={styles.container}>
-      <Text style={styles.title}>Customer Home</Text>
-      <Text style={styles.subtitle}>Welcome, Dear Customer!</Text>
+    <SafeAreaView style={{ flex: 1, backgroundColor: "#FFFFFF" }}>
+      <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
+        
+        {/* Header */}
+        <Header
+          title="Menu"
+          logoSource={require("../../assets/logo.png")}
+          onNotificationPress={() => console.log("Notification clicked")}
+        />
+
+        {/* Search bar */}
+        <View style={styles.searchWrapper}>
+          <SearchBar
+            placeholder="Search your food"
+            onChangeText={setSearch}
+          />
+        </View>
+
+        {/* Filter Chips */}
+        <FilterChips onSelect={setFilter} />
+
+        {/* Grid Items */}
+        <FlatList
+          data={filteredItems}
+          keyExtractor={(item) => item.id}
+          numColumns={2}
+          scrollEnabled={false}
+          columnWrapperStyle={{ justifyContent: "space-between" }}
+          renderItem={({ item }) => (
+            <View style={styles.gridItem}>
+              <BestSellerCard
+                title={item.title}
+                price={item.price}
+                image={item.image}
+              />
+            </View>
+          )}
+        />
+
+        <View style={{ height: 100 }} />
+      </ScrollView>
     </SafeAreaView>
   );
 };
 
-export default StaffHome;
+export default CustomerMenu;
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
+    backgroundColor: "#FFFFFF",
+    paddingHorizontal: 10,
   },
-  title: { fontSize: 28, fontWeight: "700" },
-  subtitle: { fontSize: 16, marginTop: 10 },
+
+  searchWrapper: {
+    marginVertical: 10,
+  },
+
+  gridItem: {
+    flex: 1,
+    marginBottom: 16,
+  },
 });
