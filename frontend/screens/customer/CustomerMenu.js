@@ -10,6 +10,7 @@ import OrderPopup from "../../components/OrderPopUp";
 
 import vegthali from "../../assets/veg_thali.png";
 import chai from "../../assets/chai.png";
+import samosa from "../../assets/samosa.png"
 
 import { useDispatch } from "react-redux";
 import { addToCart } from "../../redux/slices/CartSlices";
@@ -19,10 +20,10 @@ const MENU_ITEMS = [
   { id: "2", title: "Chai", price: "12", image: chai, category: "Roll" },
   {
     id: "3",
-    title: "Veg Thali",
-    price: "60",
-    image: vegthali,
-    category: "Thali",
+    title: "Samosa",
+    price: "20",
+    image: samosa,
+    category: "snacks",
   },
   { id: "4", title: "Chai", price: "12", image: chai, category: "Cake" },
 ];
