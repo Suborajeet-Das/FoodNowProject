@@ -1,5 +1,5 @@
-import React from "react";
-import { ScrollView, StyleSheet, View, Text, Image } from "react-native";
+import React, { useEffect, useState } from "react";
+import { ScrollView, StyleSheet, View, Text, Image, ActivityIndicator } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import Ionicons from "@expo/vector-icons/Ionicons";
@@ -10,10 +10,37 @@ import BarChartCard from "../../components/BarChartCard";
 import TopProductCard from "../../components/TopProductCard";
 
 import logo from '../../assets/logo.png'
-
-import {COLORS} from '../../constants/Theme'
+import { COLORS } from '../../constants/Theme'
+import { BASE_URL } from "../../api/config";
 
 export default function AdminHome() {
+  const [totalOrders, setTotalOrders] = useState(0);
+  const [totalSales, setTotalSales] = useState(0);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchStats = async () => {
+      try {
+        const res = await fetch(`${BASE_URL}/orders`);
+        if (!res.ok) throw new Error("Failed to fetch");
+        const orders = await res.json();
+        
+        setTotalOrders(orders.length);
+        
+        // Calculate total sales from completed orders, or all orders depending on business logic
+        // For now, let's sum up all orders placed
+        const sales = orders.reduce((sum, order) => sum + order.totalPrice, 0);
+        setTotalSales(sales);
+      } catch (err) {
+        console.warn("Analytics error:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchStats();
+  }, []);
+
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
@@ -30,12 +57,16 @@ export default function AdminHome() {
         </View>
       </View>
 
-      <ScrollView contentContainerStyle={styles.content}>
+      <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
         {/* Stats Row */}
-        <View style={styles.row}>
-          <StatCard icon="🛒" title="Total Orders" value="200" />
-          <StatCard icon="💰" title="Sales" value="₹10,000" />
-        </View>
+        {loading ? (
+          <ActivityIndicator size="large" color="#fff" style={{ marginVertical: 20 }} />
+        ) : (
+          <View style={styles.row}>
+            <StatCard icon="🛒" title="Total Orders" value={totalOrders.toString()} />
+            <StatCard icon="💰" title="Sales" value={`₹${totalSales.toFixed(2)}`} />
+          </View>
+        )}
 
         {/* Sales Overview */}
         <LineChartCard />
@@ -51,10 +82,12 @@ export default function AdminHome() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: COLORS.primary,
+  container: { 
+    flex: 1, 
+    backgroundColor: COLORS.primary,
     paddingHorizontal: 5,
-   },
-   header: {
+  },
+  header: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
@@ -63,7 +96,6 @@ const styles = StyleSheet.create({
     paddingBottom: 5,
     backgroundColor: COLORS.primary,
   },
-
   logo: {
     width: 45,
     height: 45,
@@ -74,35 +106,10 @@ const styles = StyleSheet.create({
     color : "white",
     fontWeight: 'bold',
   },
-
-  searchBox: {
-    flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: "#FDF3D7",
-    paddingHorizontal: 10,
-    borderRadius: 20,
-    height: 38,
-    width: "55%",
-  },
-
-  searchPlaceholder: {
-    marginLeft: 6,
-    color: "#6A0A0A",
-    fontSize: 14,
-  },
-
-  dashboardTitle: {
-    fontSize: 22,
-    fontWeight: "700",
-    color: "#FDF3D7",
-    textAlign: "center",
-    marginBottom: 10,
-  },
-
   content: { 
-    padding: 15 
+    padding: 15,
+    paddingBottom: 40,
   },
-
   row: {
     flexDirection: "row",
     justifyContent: "space-between",

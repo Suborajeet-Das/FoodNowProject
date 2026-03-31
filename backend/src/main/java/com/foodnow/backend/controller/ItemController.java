@@ -1,5 +1,6 @@
 package com.foodnow.backend.controller;
 
+import com.foodnow.backend.dto.ItemResponse;
 import com.foodnow.backend.entity.Item;
 import com.foodnow.backend.service.ItemService;
 import org.springframework.web.bind.annotation.*;
@@ -17,7 +18,7 @@ public class ItemController {
     }
 
     @GetMapping("/canteen/{canteenId}")
-    public List<Item> getItemsForCanteen(@PathVariable Long canteenId) {
+    public List<ItemResponse> getItemsForCanteen(@PathVariable Long canteenId) {
         return service.getItemsForCanteen(canteenId);
     }
 

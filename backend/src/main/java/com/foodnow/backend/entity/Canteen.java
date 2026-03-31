@@ -12,6 +12,8 @@ public class Canteen {
     private String name;
     private String location;
 
+    public Canteen() {}
+
     public Long getId() {
         return id;
     }

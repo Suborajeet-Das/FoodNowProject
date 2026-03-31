@@ -1,5 +1,6 @@
 package com.foodnow.backend.service;
 
+import com.foodnow.backend.dto.ItemResponse;
 import com.foodnow.backend.entity.Canteen;
 import com.foodnow.backend.entity.Item;
 import com.foodnow.backend.repository.CanteenRepository;
@@ -7,6 +8,7 @@ import com.foodnow.backend.repository.ItemRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class ItemService {
@@ -19,10 +21,12 @@ public class ItemService {
         this.canteenRepo = canteenRepo;
     }
 
-    public List<Item> getItemsForCanteen(Long canteenId) {
+    public List<ItemResponse> getItemsForCanteen(Long canteenId) {
         Canteen canteen = canteenRepo.findById(canteenId)
                 .orElseThrow(() -> new RuntimeException("Canteen not found with id " + canteenId));
-        return itemRepo.findByCanteen(canteen);
+        return itemRepo.findByCanteen(canteen).stream()
+                .map(ItemResponse::from)
+                .collect(Collectors.toList());
     }
 
     public Item createItem(Long canteenId, Item item) {

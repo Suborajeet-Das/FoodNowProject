@@ -1,0 +1,43 @@
+﻿[INFO] Scanning for projects...
+[INFO] 
+[INFO] ------------------------< com.foodnow:backend >-------------------------
+[INFO] Building backend 0.0.1-SNAPSHOT
+[INFO]   from pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- clean:3.5.0:clean (default-clean) @ backend ---
+[INFO] Deleting C:\Users\Subor\OneDrive\Desktop\foodNowFinal\FoodNowProject\backend\target
+[INFO] 
+[INFO] --- resources:3.3.1:resources (default-resources) @ backend ---
+[INFO] Copying 1 resource from src\main\resources to target\classes
+[INFO] Copying 0 resource from src\main\resources to target\classes
+[INFO] 
+[INFO] --- compiler:3.14.1:compile (default-compile) @ backend ---
+[INFO] Recompiling the module because of changed source code.
+[INFO] Compiling 25 source files with javac [debug parameters release 17] to target\classes
+[INFO] -------------------------------------------------------------
+[ERROR] COMPILATION ERROR : 
+[INFO] -------------------------------------------------------------
+[ERROR] /C:/Users/Subor/OneDrive/Desktop/foodNowFinal/FoodNowProject/backend/src/main/java/com/foodnow/backend/controller/CanteenController.java:[40,17] cannot find symbol
+  symbol:   method map(ResponseEntity::ok)
+  location: class com.foodnow.backend.entity.Canteen
+[INFO] 1 error
+[INFO] -------------------------------------------------------------
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD FAILURE
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  5.022 s
+[INFO] Finished at: 2026-03-23T22:26:51+05:30
+[INFO] ------------------------------------------------------------------------
+[ERROR] Failed to execute goal org.apache.maven.plugins:maven-compiler-plugin:3.14.1:compile (default-compile) on project backend: Compilation failure
+[ERROR] /C:/Users/Subor/OneDrive/Desktop/foodNowFinal/FoodNowProject/backend/src/main/java/com/foodnow/backend/controller/CanteenController.java:[40,17] cannot find symbol
+[ERROR]   symbol:   method map(ResponseEntity::ok)
+[ERROR]   location: class com.foodnow.backend.entity.Canteen
+[ERROR] 
+[ERROR] -> [Help 1]
+[ERROR] 
+[ERROR] To see the full stack trace of the errors, re-run Maven with the -e switch.
+[ERROR] Re-run Maven using the -X switch to enable full debug logging.
+[ERROR] 
+[ERROR] For more information about the errors and possible solutions, please read the following articles:
+[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/MojoFailureException

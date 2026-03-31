@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   View,
   Text,
@@ -6,15 +6,19 @@ import {
   Image,
   TouchableOpacity,
   ScrollView,
+  ActivityIndicator,
+  Alert,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useSelector, useDispatch } from "react-redux";
-import { removeFromCart } from "../../redux/slices/CartSlices";
+import { removeFromCart, clearCart } from "../../redux/slices/CartSlices";
 import Header from "../../components/Header";
+import { BASE_URL } from "../../api/config";
 
 const CustomerCart = ({ navigation }) => {
   const dispatch = useDispatch();
   const cartItems = useSelector((state) => state.cart.items);
+  const [isCheckingOut, setIsCheckingOut] = useState(false);
 
   // ✅ Empty cart
   if (cartItems.length === 0) {
@@ -31,6 +35,44 @@ const CustomerCart = ({ navigation }) => {
   const totalPrice = cartItems.reduce((sum, cart) => {
     return sum + Number(cart.item.price) * cart.quantity;
   }, 0);
+
+  const handleCheckout = async () => {
+    setIsCheckingOut(true);
+    try {
+      // Build DTO
+      const payload = {
+        userId: 1, // Hardcoded student for now
+        canteenId: 1, // Hardcoded canteen for now
+        items: cartItems.map((cart) => ({
+          itemId: Number(cart.item.id),
+          quantity: cart.quantity,
+        })),
+      };
+
+      const response = await fetch(`${BASE_URL}/orders`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to place order.");
+      }
+
+      const orderData = await response.json();
+
+      // Clear the local cart now that the order is placed
+      dispatch(clearCart());
+
+      // Pass the real order data to the QR screen
+      navigation.navigate("QR", { order: orderData });
+    } catch (error) {
+      console.warn("Checkout error:", error);
+      Alert.alert("Checkout Error", "Make sure your backend is running.");
+    } finally {
+      setIsCheckingOut(false);
+    }
+  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -73,7 +115,7 @@ const CustomerCart = ({ navigation }) => {
         <View style={styles.summaryBox}>
           <Text style={styles.summaryTitle}>Order Summary</Text>
 
-          <View className="rowSpace" style={styles.rowSpace}>
+          <View style={styles.rowSpace}>
             <Text>Items Total</Text>
             <Text>₹ {totalPrice}</Text>
           </View>
@@ -86,10 +128,15 @@ const CustomerCart = ({ navigation }) => {
 
         {/* Checkout Button */}
         <TouchableOpacity
-          style={styles.checkoutBtn}
-          onPress={() => navigation.navigate("QR")}
+          style={[styles.checkoutBtn, isCheckingOut && { opacity: 0.7 }]}
+          onPress={handleCheckout}
+          disabled={isCheckingOut}
         >
-          <Text style={styles.checkoutText}>Checkout</Text>
+          {isCheckingOut ? (
+            <ActivityIndicator color="white" />
+          ) : (
+            <Text style={styles.checkoutText}>Checkout</Text>
+          )}
         </TouchableOpacity>
 
         {/* Extra bottom padding so last button isn't glued to bottom */}
@@ -106,12 +153,10 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "white",
   },
-
   scrollContent: {
     paddingHorizontal: 16,
     paddingBottom: 20,
   },
-
   emptyContainer: {
     flex: 1,
     justifyContent: "center",
@@ -131,26 +176,6 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: "#777",
   },
-
-  header: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    marginVertical: 10,
-  },
-  logo: {
-    width: 35,
-    height: 35,
-    resizeMode: "contain",
-  },
-  headerTitle: {
-    fontSize: 20,
-    fontWeight: "700",
-  },
-  bell: {
-    fontSize: 22,
-  },
-
   cartItem: {
     flexDirection: "row",
     backgroundColor: "#fff",
@@ -184,7 +209,6 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
-
   summaryBox: {
     backgroundColor: "#f8f8f8",
     marginTop: 25,
@@ -205,7 +229,6 @@ const styles = StyleSheet.create({
     fontWeight: "700",
     fontSize: 16,
   },
-
   checkoutBtn: {
     backgroundColor: "#6A0A0A",
     paddingVertical: 14,

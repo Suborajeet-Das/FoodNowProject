@@ -2,6 +2,7 @@ package com.foodnow.backend.controller;
 
 import com.foodnow.backend.entity.Canteen;
 import com.foodnow.backend.service.CanteenService;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -10,39 +11,28 @@ import java.util.List;
 @RequestMapping("/api/canteens")
 public class CanteenController {
 
-    private final CanteenService service;
+    private final CanteenService canteenService;
 
-    public CanteenController(CanteenService service) {
-        this.service = service;
+    public CanteenController(CanteenService canteenService) {
+        this.canteenService = canteenService;
     }
 
-    // GET /api/canteens
-    @GetMapping
-    public List<Canteen> getAll() {
-        return service.getAll();
-    }
-
-    // GET /api/canteens/{id}
-    @GetMapping("/{id}")
-    public Canteen getOne(@PathVariable Long id) {
-        return service.getById(id);
-    }
-
-    // POST /api/canteens
     @PostMapping
-    public Canteen create(@RequestBody Canteen c) {
-        return service.create(c);
+    public ResponseEntity<Canteen> createCanteen(@RequestBody Canteen canteen) {
+        return ResponseEntity.ok(canteenService.create(canteen));
     }
 
-    // PUT /api/canteens/{id}
-    @PutMapping("/{id}")
-    public Canteen update(@PathVariable Long id, @RequestBody Canteen c) {
-        return service.update(id, c);
+    @GetMapping
+    public ResponseEntity<List<Canteen>> getAllCanteens() {
+        return ResponseEntity.ok(canteenService.getAll());
     }
 
-    // DELETE /api/canteens/{id}
-    @DeleteMapping("/{id}")
-    public void delete(@PathVariable Long id) {
-        service.delete(id);
+    @GetMapping("/{id}")
+    public ResponseEntity<Canteen> getCanteenById(@PathVariable Long id) {
+        Canteen canteen = canteenService.getById(id);
+        if (canteen != null) {
+            return ResponseEntity.ok(canteen);
+        }
+        return ResponseEntity.notFound().build();
     }
 }

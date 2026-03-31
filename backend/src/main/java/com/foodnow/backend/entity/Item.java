@@ -20,6 +20,8 @@ public class Item {
     @JoinColumn(name = "canteen_id", nullable = false)
     private Canteen canteen;
 
+    public Item() {}
+
     public Long getId() {
         return id;
     }

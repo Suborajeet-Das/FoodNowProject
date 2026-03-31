@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { View, Text, StyleSheet, ScrollView, FlatList } from "react-native";
+import React, { useState, useEffect } from "react";
+import { View, Text, StyleSheet, ScrollView, FlatList, ActivityIndicator, Alert } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import Header from "../../components/Header";
@@ -8,38 +8,47 @@ import FilterChips from "../../components/FilterChips";
 import BestSellerCard from "../../components/BestSellerCard";
 import OrderPopup from "../../components/OrderPopUp";
 
-import vegthali from "../../assets/veg_thali.png";
-import chai from "../../assets/chai.png";
-import samosa from "../../assets/samosa.png"
 
-import { useDispatch } from "react-redux";
-import { addToCart } from "../../redux/slices/CartSlices";
+import { BASE_URL } from "../../api/config";
+import { COLORS } from "../../constants/Theme";
 
-const MENU_ITEMS = [
-  { id: "1", title: "Thali", price: "60", image: vegthali, category: "Thali" },
-  { id: "2", title: "Chai", price: "12", image: chai, category: "Roll" },
-  {
-    id: "3",
-    title: "Samosa",
-    price: "20",
-    image: samosa,
-    category: "snacks",
-  },
-  { id: "4", title: "Chai", price: "12", image: chai, category: "Cake" },
-];
+// Fallback images since backend doesn't store image URLs yet
+const fallbackImage = require("../../assets/veg_thali.png");
 
 const CustomerMenu = ({ navigation }) => {
+  const [menuItems, setMenuItems] = useState([]);
+  const [loading, setLoading] = useState(true);
+
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState("All");
+  
   const [showPopup, setShowPopup] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
   const [quantity, setQuantity] = useState(1);
   const [timeSlot, setTimeSlot] = useState("");
   const [addition, setAddition] = useState("");
 
-  const dispatch = useDispatch();
+  useEffect(() => {
+    fetch(`${BASE_URL}/items/canteen/1`)
+      .then((res) => {
+        if (!res.ok) throw new Error("Network error");
+        return res.json();
+      })
+      .then((data) => {
+        const mapped = data.map((item) => ({
+          id: item.id.toString(),
+          title: item.name,
+          price: item.price.toString(),
+          image: fallbackImage,
+          category: "All", // Default category
+        }));
+        setMenuItems(mapped);
+      })
+      .catch((err) => Alert.alert("Error", "Could not load menu items."))
+      .finally(() => setLoading(false));
+  }, []);
 
-  const filteredItems = MENU_ITEMS.filter(
+  const filteredItems = menuItems.filter(
     (item) =>
       (filter === "All" || item.category === filter) &&
       item.title.toLowerCase().includes(search.toLowerCase())
@@ -64,29 +73,37 @@ const CustomerMenu = ({ navigation }) => {
         <FilterChips onSelect={setFilter} />
 
         {/* Grid Items */}
-        <FlatList
-          data={filteredItems}
-          keyExtractor={(item) => item.id}
-          numColumns={2}
-          scrollEnabled={false}
-          columnWrapperStyle={{ justifyContent: "space-between" }}
-          renderItem={({ item }) => (
-            <View style={styles.gridItem}>
-              <BestSellerCard
-                title={item.title}
-                price={item.price}
-                image={item.image}
-                onPress={() => {
-                  setSelectedItem(item);
-                  setQuantity(1);
-                  setTimeSlot("");
-                  setAddition("");
-                  setShowPopup(true);
-                }}
-              />
-            </View>
-          )}
-        />
+        {loading ? (
+          <ActivityIndicator size="large" color={COLORS.primary} style={{ marginTop: 40 }} />
+        ) : filteredItems.length === 0 ? (
+          <Text style={{ textAlign: "center", marginTop: 40, color: "#888" }}>
+            No items available right now.
+          </Text>
+        ) : (
+          <FlatList
+            data={filteredItems}
+            keyExtractor={(item) => item.id}
+            numColumns={2}
+            scrollEnabled={false}
+            columnWrapperStyle={{ justifyContent: "space-between" }}
+            renderItem={({ item }) => (
+              <View style={styles.gridItem}>
+                <BestSellerCard
+                  title={item.title}
+                  price={item.price}
+                  image={item.image}
+                  onPress={() => {
+                    setSelectedItem(item);
+                    setQuantity(1);
+                    setTimeSlot("");
+                    setAddition("");
+                    setShowPopup(true);
+                  }}
+                />
+              </View>
+            )}
+          />
+        )}
         <View style={{ height: 100 }} />
       </ScrollView>
       <OrderPopup
@@ -100,15 +117,6 @@ const CustomerMenu = ({ navigation }) => {
         addition={addition}
         setAddition={setAddition}
         onContinue={() => {
-          dispatch(
-            addToCart({
-              item: selectedItem,
-              quantity,
-              timeSlot,
-              addition,
-            })
-          );
-
           setShowPopup(false);
           navigation.navigate("Cart");
         }}
@@ -125,11 +133,9 @@ const styles = StyleSheet.create({
     backgroundColor: "#FFFFFF",
     paddingHorizontal: 10,
   },
-
   searchWrapper: {
     marginVertical: 10,
   },
-
   gridItem: {
     flex: 1,
     marginBottom: 16,
