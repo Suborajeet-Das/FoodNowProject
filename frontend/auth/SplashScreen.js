@@ -5,7 +5,7 @@ import logo from '../assets/logo.png'
 
 const SplashScreen = ({navigation}) => {
 
-   // Navigate after 2.5 seconds
+  // Navigate after 2.5 second
   useEffect(() => {
     const timer = setTimeout(() => {
       navigation.replace("RoleSelection");  
