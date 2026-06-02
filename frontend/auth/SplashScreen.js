@@ -8,7 +8,7 @@ const SplashScreen = ({navigation}) => {
   // Navigate after 2.5 second
   useEffect(() => {
     const timer = setTimeout(() => {
-      navigation.replace("RoleSelection");  
+      navigation.replace("AuthLanding");  
     }, 2500);
 
     return () => clearTimeout(timer);
