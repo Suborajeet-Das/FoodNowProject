@@ -5,28 +5,26 @@ import BestSellerCard from "./BestSellerCard";
 import vegthali from '../assets/veg_thali.png';
 import chai from '../assets/chai.png';
 
-const BestSellerList = () => {
+const items = [
+  { id: "bs-1", title: "Veg Thali", price: "60", image: vegthali },
+  { id: "bs-2", title: "Chai", price: "12", image: chai },
+  { id: "bs-3", title: "Dosa", price: "40", image: chai },
+];
+
+const BestSellerList = ({ onItemPress }) => {
   return (
     <ScrollView horizontal showsHorizontalScrollIndicator={false}>
       <View style={styles.row}>
 
-        <BestSellerCard
-          title="Veg Thali"
-          price="60"
-          image={vegthali}
-        />
-
-        <BestSellerCard
-          title="Chai"
-          price="12"
-          image={chai}
-        />
-
-        <BestSellerCard
-          title="Dosa"
-          price="40"
-          image={chai}
-        />
+        {items.map((item) => (
+          <BestSellerCard
+            key={item.id}
+            title={item.title}
+            price={item.price}
+            image={item.image}
+            onPress={() => onItemPress && onItemPress(item)}
+          />
+        ))}
 
       </View>
     </ScrollView>
