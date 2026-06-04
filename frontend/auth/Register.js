@@ -27,20 +27,13 @@ const Register = ({ navigation }) => {
   const [errors, setErrors] = useState({});
 
   const dispatch = useDispatch();
-  const { loading, error, isLoggedIn } = useSelector((state) => state.auth);
+  const { loading, error } = useSelector((state) => state.auth);
 
   // Clear global auth errors when entering/leaving screen
   useEffect(() => {
     dispatch(clearError());
     return () => dispatch(clearError());
   }, [dispatch]);
-
-  // Navigate on successful registration
-  useEffect(() => {
-    if (isLoggedIn) {
-      navigation.replace("RoleSelection");
-    }
-  }, [isLoggedIn, navigation]);
 
   const validate = () => {
     let localErrors = {};
@@ -79,9 +72,9 @@ const Register = ({ navigation }) => {
     return Object.keys(localErrors).length === 0;
   };
 
-  const handleRegister = () => {
+  const handleRegister = async () => {
     if (validate()) {
-      dispatch(
+      const resultAction = await dispatch(
         register({
           fullName: fullName.trim(),
           email: email.trim(),
@@ -89,6 +82,9 @@ const Register = ({ navigation }) => {
           password,
         })
       );
+      if (register.fulfilled.match(resultAction)) {
+        navigation.replace("RoleSelection");
+      }
     }
   };
 

@@ -22,6 +22,11 @@ public class ItemController {
         return service.getItemsForCanteen(canteenId);
     }
 
+    @GetMapping("/popular")
+    public List<ItemResponse> getPopularItems() {
+        return service.getPopularItems();
+    }
+
     @PostMapping("/canteen/{canteenId}")
     public Item createItem(@PathVariable Long canteenId, @RequestBody Item item) {
         return service.createItem(canteenId, item);

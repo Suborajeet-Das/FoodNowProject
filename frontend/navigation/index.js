@@ -23,7 +23,8 @@ const RootNavigation = () => {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    dispatch(restoreToken());
+    // Commented out for demo purposes: Do not automatically log users in on app start
+    // dispatch(restoreToken());
   }, [dispatch]);
 
   return (

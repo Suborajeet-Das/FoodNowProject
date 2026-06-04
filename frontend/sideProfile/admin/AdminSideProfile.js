@@ -1,5 +1,7 @@
 import React from "react";
 import { ScrollView, View, Text, TouchableOpacity } from "react-native";
+import { useDispatch } from "react-redux";
+import { logout } from "../../redux/slices/authSlice";
 import { styles } from "../../components/styles";
 import PrimaryButton from "../../components/PrimaryButton";
 import {COLORS} from '../../constants/Theme';
@@ -7,6 +9,7 @@ import ProfilePicture from '../../components/ProfilePicture'
 import profile from '../../assets/icon.png'
 
 const AdminSideProfile = ({ navigation }) => {
+  const dispatch = useDispatch();
   return (
     <ScrollView
       style={styles.sideProfileContainer}
@@ -58,7 +61,18 @@ const AdminSideProfile = ({ navigation }) => {
         /> */}
       </View>
 
-      <PrimaryButton width={230} height={50} text={'Sign out'} onPress={()=>{console.log('signed out')}} />
+      <PrimaryButton
+        width={230}
+        height={50}
+        text={'Sign out'}
+        onPress={() => {
+          dispatch(logout());
+          navigation.reset({
+            index: 0,
+            routes: [{ name: "AuthLanding" }],
+          });
+        }}
+      />
     </ScrollView>
   );
 };

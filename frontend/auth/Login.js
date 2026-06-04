@@ -24,20 +24,13 @@ const Login = ({ navigation }) => {
   const [errors, setErrors] = useState({});
 
   const dispatch = useDispatch();
-  const { loading, error, isLoggedIn } = useSelector((state) => state.auth);
+  const { loading, error } = useSelector((state) => state.auth);
 
   // Clear global auth errors when entering/leaving screen
   useEffect(() => {
     dispatch(clearError());
     return () => dispatch(clearError());
   }, [dispatch]);
-
-  // Navigate on successful login
-  useEffect(() => {
-    if (isLoggedIn) {
-      navigation.replace("RoleSelection");
-    }
-  }, [isLoggedIn, navigation]);
 
   const validate = () => {
     let localErrors = {};
@@ -59,9 +52,12 @@ const Login = ({ navigation }) => {
     return Object.keys(localErrors).length === 0;
   };
 
-  const handleLogin = () => {
+  const handleLogin = async () => {
     if (validate()) {
-      dispatch(login({ email: email.trim(), password }));
+      const resultAction = await dispatch(login({ email: email.trim(), password }));
+      if (login.fulfilled.match(resultAction)) {
+        navigation.replace("RoleSelection");
+      }
     }
   };
 

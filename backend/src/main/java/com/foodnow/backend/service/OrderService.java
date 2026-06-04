@@ -4,6 +4,9 @@ import com.foodnow.backend.dto.OrderResponse;
 import com.foodnow.backend.dto.PlaceOrderRequest;
 import com.foodnow.backend.entity.*;
 import com.foodnow.backend.repository.*;
+import org.springframework.cache.Cache;
+import org.springframework.cache.CacheManager;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,15 +21,18 @@ public class OrderService {
     private final ItemRepository itemRepo;
     private final UserRepository userRepo;
     private final CanteenRepository canteenRepo;
+    private final CacheManager cacheManager;
 
     public OrderService(FoodOrderRepository orderRepo,
                         ItemRepository itemRepo,
                         UserRepository userRepo,
-                        CanteenRepository canteenRepo) {
+                        CanteenRepository canteenRepo,
+                        CacheManager cacheManager) {
         this.orderRepo   = orderRepo;
         this.itemRepo    = itemRepo;
         this.userRepo    = userRepo;
         this.canteenRepo = canteenRepo;
+        this.cacheManager = cacheManager;
     }
 
     // ---- CUSTOMER: place a new order ----
@@ -61,6 +67,7 @@ public class OrderService {
 
         order.setTotalPrice(total);
         FoodOrder saved = orderRepo.save(order);
+        evictOrderCaches();
         return OrderResponse.from(saved);
     }
 
@@ -83,6 +90,7 @@ public class OrderService {
     }
 
     // ---- ADMIN: view all orders ----
+    @Cacheable(value = "dashboardStats", key = "'allOrders'")
     public List<OrderResponse> getAllOrders() {
         return orderRepo.findAll().stream()
                 .map(OrderResponse::from)
@@ -97,7 +105,9 @@ public class OrderService {
 
         validateStatusTransition(order.getStatus(), newStatus);
         order.setStatus(newStatus);
-        return OrderResponse.from(orderRepo.save(order));
+        OrderResponse response = OrderResponse.from(orderRepo.save(order));
+        evictOrderCaches();
+        return response;
     }
 
     // ---- KIOSK: verify QR and mark COMPLETED or ARRIVED ----
@@ -116,7 +126,9 @@ public class OrderService {
             );
         }
 
-        return OrderResponse.from(orderRepo.save(order));
+        OrderResponse response = OrderResponse.from(orderRepo.save(order));
+        evictOrderCaches();
+        return response;
     }
 
     // ---- Internal: enforce allowed transitions ----
@@ -131,6 +143,17 @@ public class OrderService {
             throw new IllegalStateException(
                 "Invalid status transition: " + current + " → " + next
             );
+        }
+    }
+
+    private void evictOrderCaches() {
+        Cache dashboardStatsCache = cacheManager.getCache("dashboardStats");
+        if (dashboardStatsCache != null) {
+            dashboardStatsCache.evict("allOrders");
+        }
+        Cache popularItemsCache = cacheManager.getCache("popularItems");
+        if (popularItemsCache != null) {
+            popularItemsCache.evict("top");
         }
     }
 }
